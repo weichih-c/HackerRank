@@ -14,73 +14,72 @@ public class Solution {
         
         boolean isEven = d%2==0;
         // check times
-        for(int i=0; i<expenditure.length-d; i++){
+        for(int i=0; i<(expenditure.length-d); i++){
             
             int[] currExpArr = new int[d];
             // copy sub array
             for(int j=0, subIdx=i; j<d; j++, subIdx++){
-                currExpArr[j] = expenditure[subIdx];
+                currExpArr[j] = expenditure[subIdx]; // 1 2 3 4
             }
             
-            // do sorting asc
-            sort(currExpArr);
-            
-            if(isEven){
-                int doubleMedian = getMedian(d, currExpArr, isEven);
-                if(expenditure[i+d] >= (doubleMedian)){
-                    notifCnt++;
-                }
-            }else{
-                int median = getMedian(d, currExpArr, isEven);
-                if(expenditure[i+d] >= (median*2)){
-                    notifCnt++;
-                }
+            int doubleMedian = getMedian(currExpArr, isEven);
+            if(expenditure[i+d] >= (doubleMedian)){
+                notifCnt++;
             }
         }
         
         return notifCnt;
     }
     
-    static void sort(int[] arr){
-        doQuickSort(arr, 0, arr.length-1);
-    }
-    
-    private static void doQuickSort(int[] number, int left, int right) {
-        if(left < right) { 
-            int q = partition(number, left, right); 
-            doQuickSort(number, left, q-1); 
-            doQuickSort(number, q+1, right); 
-        } 
+     
+    static int getMedian(int[] arr, boolean isEven){
+        // [1 2 3 4], true
+        Map<Integer, Integer> countMap = new HashMap<>();
+        for(int i=0; i<arr.length; i++){
+            if(countMap.get(arr[i])== null){
+                countMap.put(arr[i], 1);
+            }else{
+                countMap.put(arr[i], (1+countMap.get(arr[i])) );
+            }
+        }
+        
+        
+        int half = arr.length/2;        
+        
+        // put into buffer array
+        int[] buffer = new int[arr.length];
+        int bufferIndex = 0;
+        
+        Integer[] tempArr = new Integer[countMap.keySet().size()];
+        countMap.keySet().toArray(tempArr);
+        Arrays.sort(tempArr);
 
-    }
-
-    private static int partition(int number[], int left, int right) {  
-        int i = left - 1; 
-        for(int j = left; j < right; j++) { 
-            if(number[j] <= number[right]) { 
-                i++; 
-                swap(number, i, j); 
-            } 
-        } 
-        swap(number, i+1, right); 
-        return i+1; 
-    } 
-
-    private static void swap(int[] number, int i, int j) {
-        int t = number[i]; 
-        number[i] = number[j]; 
-        number[j] = t;
-    }
-    
-    static int getMedian(int arrayLen, int[] arr, boolean isEven){
-        if(isEven){
-            int midIdxRight = arrayLen/2;
-            int midIdxLeft = midIdxRight - 1;
+        boolean terminateFlag = false;
+        for(int i=0; i<tempArr.length; i++){
+            Integer key = tempArr[i];
+            Integer val = countMap.get(key);
             
-            return ( (arr[midIdxRight] + arr[midIdxLeft])  );
+            for(int j=0; j<val; j++, bufferIndex++){
+                buffer[bufferIndex] = key;
+
+                if( bufferIndex>half ){
+                    terminateFlag = true;
+                    break;   
+                }
+            }
+            
+            if( terminateFlag ){
+                break;   
+            }
+        }
+
+        if(isEven){
+            int right = buffer[half];
+            int left = buffer[half-1];
+            
+            return (right+left);
         }else{
-            int medianIdx = arrayLen/2;
-            return arr[medianIdx];
+            return buffer[half]*2;
         }
     }
 
