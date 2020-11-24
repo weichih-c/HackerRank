@@ -17,10 +17,11 @@ public class Solution {
         for(int i=0; i<(expenditure.length-d); i++){
             
             int[] currExpArr = new int[d];
-            // copy sub array
-            for(int j=0, subIdx=i; j<d; j++, subIdx++){
-                currExpArr[j] = expenditure[subIdx]; // 1 2 3 4
-            }
+            // // copy sub array
+            // for(int j=0, subIdx=i; j<d; j++, subIdx++){
+            //     currExpArr[j] = expenditure[subIdx]; // 1 2 3 4
+            // }
+            currExpArr = Arrays.copyOfRange(expenditure, i, i+d);
             
             int doubleMedian = getMedian(currExpArr, isEven);
             if(expenditure[i+d] >= (doubleMedian)){
